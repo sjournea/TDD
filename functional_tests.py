@@ -1,6 +1,7 @@
 """functional_tests.py """
 import unittest
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 
 class NewVisitorTest(unittest.TestCase):
     def setUp(self):
@@ -11,18 +12,30 @@ class NewVisitorTest(unittest.TestCase):
         self.browser.quit()
         
     def test_can_start_a_list_and_retrieve_it_later(self):
-        # 
+        # connect to home page
         self.browser.get( 'http://localhost:8000')
     
         # verify browser title
         self.assertIn('To-Do', self.browser.title)
-        self.fail('Finish this test')
+        header_text = self.browser.find_elements_by_tag_name('h1').text
+        self.assertIn('To=Do', header_text)
         
-        # invited
+        # verify invited to enter a to-do item
+        inputbox = self.browser.find_elements_by_id('id_new_item')
+        self.assertEqual(inputbox.get_attribute('placeholder'), 'Enter a to-do item')
         
-        # types ""Busy Peacock feathers"
+        # type "Buy peacock feathers"
+        inputbox.send_keys('Buy peacock feathers')
+        # send Enter Key
+        inputbox.send_keys(Keys.ENTER)
+        # verify page updates
+        table = self.browser.find_elements_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertTrue(any(row.text == '1: Buy peakcock feathers' for row in rows))
         
-        # Enter, page updates
+        # verify still another text box inviting to add another item
+        self.Fail('Finish the Test!!')
+        
 
 if __name__ == '__main__':
     unittest.main()
